@@ -13,7 +13,7 @@ jobs:
       with:
           pkgdir: "zen"
           namcapDisable: 1
-          makepkgArgs: "--skippgpcheck"
+          makepkgArgs: "-sf --noconfirm --skippgpcheck"
           aurDeps: 1
     - name: Release
       uses: ncipollo/release-action@v1.8.6
