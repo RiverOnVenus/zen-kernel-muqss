@@ -15,12 +15,9 @@ makedepends=(
 )
 options=('!strip')
 _srcname=zen-kernel
-_patchsource="https://raw.githubusercontent.com/RiverOnVenus/linux-ck-uksm-cjktty/master/patches/5.13"
 source=(
   "$_srcname::git+https://github.com/zen-kernel/zen-kernel?signed#tag=$_srctag"
   config         # the main kernel config file
-  "${_patchsource}/uksm/0001-uksm-5.13.patch"
-  "${_patchsource}/cjktty/0001-cjktty-5.13.patch"
 )
 validpgpkeys=(
   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
