@@ -15,6 +15,7 @@ makedepends=(
 )
 options=('!strip')
 _srcname=zen-kernel
+_patchsource="https://raw.githubusercontent.com/RiverOnVenus/linux-ck-uksm-cjktty/master/patches/5.13"
 source=(
   "$_srcname::git+https://github.com/zen-kernel/zen-kernel?signed#tag=$_srctag"
   config         # the main kernel config file
