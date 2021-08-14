@@ -19,6 +19,6 @@ jobs:
       uses: ncipollo/release-action@v1.8.6
       with:
           allowUpdates: 1
-          tag: "v5.13.9-zen1"
+          tag: "v5.13.10-zen1"
           artifacts: "./*/*.zst"
           token: ${{ secrets.GITHUB_TOKEN }}
