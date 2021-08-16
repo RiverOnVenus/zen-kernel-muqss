@@ -1,7 +1,8 @@
-# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Maintainer: RiverOnVenus <RiverOnVenus@gmail.com>
+# Contributor: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
 
-pkgbase=linux-zen
-pkgver=5.13.10.zen1
+pkgbase=linux-zen-muqss
+pkgver=5.12.19.zen2
 pkgrel=1
 pkgdesc='Linux ZEN'
 _srctag=v${pkgver%.*}-${pkgver##*.}
@@ -14,13 +15,13 @@ makedepends=(
   git
 )
 options=('!strip')
-_patchsource="https://raw.githubusercontent.com/RiverOnVenus/linux-ck-uksm-cjktty/master/patches/5.13"
+_patchsource="https://raw.githubusercontent.com/RiverOnVenus/linux-ck-uksm-cjktty/master/patches/5.12"
 _srcname=zen-kernel
 source=(
   "$_srcname::git+https://github.com/zen-kernel/zen-kernel?signed#tag=$_srctag"
   config         # the main kernel config file
-  "${_patchsource}/uksm/0001-uksm-5.13.patch"
-  "${_patchsource}/cjktty/0001-cjktty-5.13.patch"
+  "${_patchsource}/uksm-patches/0001-UKSM-for-5.12.patch"
+  "${_patchsource}/cjktty-patches/0001-cjktty-5.12-initial-import-from-https-github.com-zhm.patch"
 )
 validpgpkeys=(
   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
@@ -29,7 +30,7 @@ validpgpkeys=(
   'C5ADB4F3FEBBCE27A3E54D7D9AE4078033F8024D'  # Steven Barrett <steven@liquorix.net>
 )
 sha256sums=('SKIP'
-            '556a5f3347e5e81cda0d93fbd0a6e2640bb0237a88c918d74c91aa77ea81b71f'
+            'SKIP'
             'SKIP'
             'SKIP')
 
@@ -78,6 +79,10 @@ echo "Enabling MuQSS..."
 
   echo "Disabling NUMA from kernel config..."
   scripts/config --disable CONFIG_NUMA
+  
+    echo "Disabling zswap"
+  scripts/config --disable CONFIG_ZSWAP
+  scripts/config --disable CONFIG_ZSWAP_DEFAULT_ON
 
   echo "Enabling zram compression to ZSTD..."
   scripts/config --enable CONFIG_ZRAM
