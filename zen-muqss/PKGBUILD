@@ -1,8 +1,7 @@
-# Maintainer: RiverOnVenus <RiverOnVenus@gmail.com>
-# Contributor: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
 pkgbase=linux-zen-muqss
-pkgver=5.13.13.zen1
+pkgver=5.14.1.zen1
 pkgrel=1
 pkgdesc='Linux ZEN'
 _srctag=v${pkgver%.*}-${pkgver##*.}
@@ -19,10 +18,6 @@ _srcname=zen-kernel
 source=(
   "$_srcname::git+https://github.com/zen-kernel/zen-kernel?signed#tag=$_srctag"
   config         # the main kernel config file
-  0001-cjktty-5.13.patch
-  0001-security-patches.patch
-  0001-swap-patches.patch
-  0001-uksm-5.13.patch
 )
 validpgpkeys=(
   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
@@ -31,11 +26,7 @@ validpgpkeys=(
   'C5ADB4F3FEBBCE27A3E54D7D9AE4078033F8024D'  # Steven Barrett <steven@liquorix.net>
 )
 sha256sums=('SKIP'
-            'SKIP'
-            'SKIP'
-            'SKIP'
-            'SKIP'
-            'SKIP')
+            '2c17584cbf8a17c805223eb1f56882e9e7ec6b25c3ed49d07e968851f6e1a82b')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -59,18 +50,10 @@ prepare() {
   done
 
   echo "Setting config..."
-  
   cp ../config .config
   
-echo "Enabling MuQSS..."
+  echo "Enabling MuQSS..."
   scripts/config --enable CONFIG_SCHED_MUQSS
-
-  echo "Enabling RQ_MC..."
-  scripts/config --disable CONFIG_RQ_NONE
-  scripts/config --enable CONFIG_RQ_MC
-  
-  echo "Set SHARERQ..."
-  scripts/config --set-val CONFIG_SHARERQ 2
 
   echo "Disabling TCP_CONG_CUBIC..."
   scripts/config --module CONFIG_TCP_CONG_CUBIC
@@ -85,7 +68,7 @@ echo "Enabling MuQSS..."
   scripts/config --disable CONFIG_NUMA
   
     echo "Disabling zswap default"
-  scripts/config --module CONFIG_ZSWAP
+  scripts/config --disable CONFIG_ZSWAP
   scripts/config --disable CONFIG_ZSWAP_DEFAULT_ON
 
   echo "Enabling zram compression to ZSTD..."
@@ -94,16 +77,16 @@ echo "Enabling MuQSS..."
   scripts/config --enable CONFIG_ZRAM_DEF_COMP_ZSTD
   scripts/config --set-str CONFIG_ZRAM_DEF_COMP zstd  
 
-  make -j$(nproc) olddefconfig
+  make olddefconfig
 
-  make -j$(nproc) -s kernelrelease > version
+  make -s kernelrelease > version
   echo "Prepared $pkgbase version $(<version)"
 }
 
 build() {
   cd $_srcname
-  make -j$(nproc) all
-  make -j$(nproc) htmldocs
+  make all
+  make htmldocs
 }
 
 _package() {
@@ -121,13 +104,13 @@ _package() {
   echo "Installing boot image..."
   # systemd expects to find the kernel here to allow hibernation
   # https://github.com/systemd/systemd/commit/edda44605f06a41fb86b7ab8128dcf99161d2344
-  install -Dm644 "$(make -j$(nproc) -s image_name)" "$modulesdir/vmlinuz"
+  install -Dm644 "$(make -s image_name)" "$modulesdir/vmlinuz"
 
   # Used by mkinitcpio to name the kernel
   echo "$pkgbase" | install -Dm644 /dev/stdin "$modulesdir/pkgbase"
 
   echo "Installing modules..."
-  make -j$(nproc) INSTALL_MOD_PATH="$pkgdir/usr" INSTALL_MOD_STRIP=1 modules_install
+  make INSTALL_MOD_PATH="$pkgdir/usr" INSTALL_MOD_STRIP=1 modules_install
 
   # remove build and source links
   rm "$modulesdir"/{source,build}
